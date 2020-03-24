@@ -23,7 +23,7 @@ scenarios:
               environmentPrefix: "esol_ap11811_cti"
               thingId: "REV_TEST_API"
               deviceType: "devicetype:algorab-io"
-              customers: [] 
+              customers: ['cli-test-01'] 
               title: "dispositivo di test"
               status: "offline"
               coordinates: 
@@ -36,7 +36,7 @@ scenarios:
              - statusCode: 200
              - contentType: json    
     # wait for 5 seconds:
-    - think: 5
+    - think: 50
     - put:
         url: "/custom/placemark/esol_ap11811_cti/REV_TEST_API"
         auth:
@@ -47,7 +47,7 @@ scenarios:
         expect:
              - statusCode: 200
              - contentType: json   
-    - think: 5
+    - think: 50
     - delete:
         url: "/custom/placemark/esol_ap11811_cti/REV_TEST_API"
         auth:

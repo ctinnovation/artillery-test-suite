@@ -30,20 +30,20 @@ scenarios:
     #     expect:
     #          - statusCode: 200
     #          - contentType: json    
-    # # wait for 5 seconds:
-    # - think: 5
-    # - put:
-    #     url: "/custom/customer/esol_ap11811_cti/cli-test-01"
-    #     auth:
-    #       user: "auge"
-    #       pass: "12345678"
-    #     json:
-    #           description: "cliente test 1"
-    #     expect:
-    #          - statusCode: 200
-    #          - contentType: json   
-    # # wait for 5 seconds:
-    # - think: 50
+    # wait for 5 seconds:
+    - think: 5
+    - put:
+        url: "/custom/customer/esol_ap11811_cti/cli-test-01"
+        auth:
+          user: "auge"
+          pass: "12345678"
+        json:
+              description: "cliente test 1"
+        expect:
+             - statusCode: 200
+             - contentType: json   
+    # wait for 5 seconds:
+    - think: 50
     - delete:
         url: "/custom/customer/esol_ap11811_cti/cli-test-01"
         auth:
