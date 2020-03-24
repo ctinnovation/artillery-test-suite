@@ -1,0 +1,51 @@
+# DEBUG=http,http:response artillery run auge-thing.yaml
+# Creo una sottoscrizione sul canale 1, 
+# Integro la sottoscrizione con il filtro sul cli-test-01
+# verifico la validità del privateChannel ritornato
+# Mi metto in ascolto tramite socket.io
+# Elimino la sottoscrizione
+config:
+  plugins:
+      expect: {}
+  target: 'https://cloudenelx.dev.ctinnovation.it/api'
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  defaults:
+    headers:
+      app_token: 'bb91039efa3c63779e076b1893927c6596cf1d23b82254df101860b4d4e6002b'
+scenarios:
+  - flow:
+    - post:
+        url: "/subscriptions"
+        json:
+              host: "artillery-test"
+              objectId: "random"
+              filter:
+                channels: [ id: 1]
+        capture:
+          - json: "$.privateChannel"
+            as: "privateChannel"
+          - json: "$.id"
+            as: "id"
+        expect:
+             - statusCode: 200
+             - contentType: json    
+    - put:
+        url: "/subscriptions/{{ id }}"
+        json:
+              filter:
+                channels: [ id: 1 ]
+                tags: ["cli-test-01"]
+        capture:
+          json: "$.privateChannel"
+          as: "privateChannel"
+        expect:
+             - statusCode: 200
+             - contentType: json
+    - get:
+        url: "/subscriptions/{{ id }}"
+        match:
+          json: "$.privateChannel"
+          value: "{{ privateChannel }}" 
+# manca la parte di socket.io
