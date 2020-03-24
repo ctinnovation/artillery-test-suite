@@ -1,0 +1,53 @@
+# esol_CTI_dev/gateway01/#
+# "environmentPrefix": "string",
+# "topic": "string",
+# "description": "string",
+# "enabled": true,
+# "customer": "string"
+config:
+  plugins:
+      expect: {}
+  target: 'https://cloudenelx.dev.ctinnovation.it/api'
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  defaults:
+    headers:
+      app_token: 'bb91039efa3c63779e076b1893927c6596cf1d23b82254df101860b4d4e6002b'
+scenarios:
+  - flow:
+    # - post:
+    #     url: "/custom/customer"
+    #     auth:
+    #       user: "auge"
+    #       pass: "12345678"
+    #     json:
+    #           environmentPrefix: "esol_ap11811_cti"
+    #           topic: "esol_CTI_dev/gateway01/#"
+    #           description: "cliente test xxx 1"
+    #           enabled: true
+    #           customer: "cli-test-01"
+    #     expect:
+    #          - statusCode: 200
+    #          - contentType: json    
+    # # wait for 5 seconds:
+    # - think: 5
+    # - put:
+    #     url: "/custom/customer/esol_ap11811_cti/cli-test-01"
+    #     auth:
+    #       user: "auge"
+    #       pass: "12345678"
+    #     json:
+    #           description: "cliente test 1"
+    #     expect:
+    #          - statusCode: 200
+    #          - contentType: json   
+    # # wait for 5 seconds:
+    # - think: 50
+    - delete:
+        url: "/custom/customer/esol_ap11811_cti/cli-test-01"
+        auth:
+          user: "auge"
+          pass: "12345678"
+        expect:
+             - statusCode: 200

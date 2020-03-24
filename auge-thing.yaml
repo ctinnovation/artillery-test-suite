@@ -1,0 +1,57 @@
+# DEBUG=http,http:response artillery run auge-thing.yaml
+# Creo la thing REV_TEST_API su esol_ap11811_cti
+# Modifico lo stato della thing REV_TEST_API su esol_ap11811_cti in SUCCESS
+# Elimino la thing REV_TEST_API su esol_ap11811_cti
+config:
+  plugins:
+      expect: {}
+  target: 'https://cloudenelx.dev.ctinnovation.it/api'
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  defaults:
+    headers:
+      app_token: 'bb91039efa3c63779e076b1893927c6596cf1d23b82254df101860b4d4e6002b'
+scenarios:
+  - flow:
+    - post:
+        url: "/custom/placemark"
+        auth:
+          user: "auge"
+          pass: "12345678"
+        json:
+              environmentPrefix: "esol_ap11811_cti"
+              thingId: "REV_TEST_API"
+              deviceType: "devicetype:algorab-io"
+              customers: [] 
+              title: "dispositivo di test"
+              status: "offline"
+              coordinates: 
+                lat: 0.0
+                lng: 0.0
+        capture:
+          json: "$.thingId"
+          as: "thingId"
+        expect:
+             - statusCode: 200
+             - contentType: json    
+    # wait for 5 seconds:
+    - think: 5
+    - put:
+        url: "/custom/placemark/esol_ap11811_cti/REV_TEST_API"
+        auth:
+          user: "auge"
+          pass: "12345678"
+        json:
+              status: "SUCCESS"
+        expect:
+             - statusCode: 200
+             - contentType: json   
+    - think: 5
+    - delete:
+        url: "/custom/placemark/esol_ap11811_cti/REV_TEST_API"
+        auth:
+          user: "auge"
+          pass: "12345678"
+        expect:
+             - statusCode: 200   
