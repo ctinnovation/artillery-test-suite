@@ -67,15 +67,9 @@ scenarios:
             value: "{{ privateChannel }}"
       - think: 5
       - emit:
-          channel: "random"
+          channel: "ping"
           namespace: "/theaterGeo"
-          response:
-            channel: "{{ privateChannel }}"
-            acknowledge:
-              match:
-                - json: "$.is_online"
-                  value: true
-      - think: 5
+      - think: 10
       - delete:
           url: "/api/subscriptions/{{ subscriptionId }}"
           expect:
