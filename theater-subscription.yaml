@@ -1,51 +1,77 @@
 # DEBUG=http,http:response artillery run auge-thing.yaml
-# Creo una sottoscrizione sul canale 1, 
+# Creo una sottoscrizione sul canale 1,
 # Integro la sottoscrizione con il filtro sul cli-test-01
 # verifico la validità del privateChannel ritornato
 # Mi metto in ascolto tramite socket.io
 # Elimino la sottoscrizione
+# bb91039efa3c63779e076b1893927c6596cf1d23b82254df101860b4d4e6002b
 config:
   plugins:
-      expect: {}
-  target: 'https://cloudenelx.dev.ctinnovation.it/api'
+    expect: {}
+  target: "https://cloudenelx.dev.ctinnovation.it"
   phases:
     - duration: 1
       arrivalRate: 1
   defaults:
     headers:
-      app_token: 'bb91039efa3c63779e076b1893927c6596cf1d23b82254df101860b4d4e6002b'
+      app_token: "{{ $processEnvironment.APP_TOKEN }}"
+  socketio:
+    timeout: 60
+    transports: ["polling", "websocket"]
+    query:
+      app_token: "{{ $processEnvironment.APP_TOKEN }}"
+  processor: "./helpers.js"
+  variables:
+    channelId: "{{ $processEnvironment.CHANNEL_ID }}"
 scenarios:
-  - flow:
-    - post:
-        url: "/subscriptions"
-        json:
-              host: "artillery-test"
-              objectId: "random"
-              filter:
-                channels: [ id: 1]
-        capture:
-          - json: "$.privateChannel"
-            as: "privateChannel"
-          - json: "$.id"
-            as: "id"
-        expect:
-             - statusCode: 200
-             - contentType: json    
-    - put:
-        url: "/subscriptions/{{ id }}"
-        json:
-              filter:
-                channels: [ id: 1 ]
-                tags: ["cli-test-01"]
-        capture:
-          json: "$.privateChannel"
-          as: "privateChannel"
-        expect:
-             - statusCode: 200
-             - contentType: json
-    - get:
-        url: "/subscriptions/{{ id }}"
-        match:
-          json: "$.privateChannel"
-          value: "{{ privateChannel }}" 
-# manca la parte di socket.io
+  - engine: "socketio"
+    flow:
+      - post:
+          url: "/api/subscriptions"
+          json:
+            host: "artillery-test"
+            objectId: "random"
+            filter:
+              channels:
+                - id: "{{ channelId }}"
+          beforeRequest: "convertFiltersToInt"
+          capture:
+            - json: "$.privateChannel"
+              as: "privateChannel"
+            - json: "$.id"
+              as: "subscriptionId"
+            - json: "$.filter"
+              as: "currentFilter"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      - put:
+          url: "/api/subscriptions/{{ subscriptionId }}"
+          json:
+            filter:
+              channels:
+                - id: "{{ channelId }}"
+              tags:
+                - "cli-test-01"
+          beforeRequest: "convertFiltersToInt"
+          expect:
+            - statusCode: 200
+            - contentType: json
+          match:
+            json: "$.privateChannel"
+            value: "{{ privateChannel }}"
+      - get:
+          url: "/api/subscriptions/{{ subscriptionId }}"
+          match:
+            json: "$.privateChannel"
+            value: "{{ privateChannel }}"
+      - think: 5
+      - emit:
+          channel: "ping"
+          namespace: "/theaterGeo"
+      - think: 10
+      - delete:
+          url: "/api/subscriptions/{{ subscriptionId }}"
+          expect:
+            - statusCode: 200
+            - contentType: json
