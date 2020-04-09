@@ -8,7 +8,7 @@
 config:
   plugins:
     expect: {}
-  target: "http://127.0.0.1:3002"
+  target: "https://cloudenelx.dev.ctinnovation.it"
   phases:
     - duration: 1
       arrivalRate: 1
